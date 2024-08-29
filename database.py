@@ -9,8 +9,16 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Configuración de la base de datos
-DB_URI = os.getenv("DATABASE_URI", "default")
+# Configuración de la base de datos para MySQL
+DB_USERNAME = os.getenv("DB_USERNAME", "default_user")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "default_password")
+DB_HOST = os.getenv("HOST", "localhost")
+DB_NAME = os.getenv("DB_DATABASE", "default_db")
+
+DB_URI = f"mysql+mysqlconnector://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+#Con postgres
+#DB_URI = os.getenv("DATABASE_URI", "default")
+
 engine = create_engine(DB_URI, poolclass=QueuePool, pool_size=5, max_overflow=0)
 Session = sessionmaker(bind=engine)
 
@@ -20,7 +28,8 @@ def get_schema()-> LiteralString:
         DB_URI
     )
     inspector = inspect(engine)
-    table_names = inspector.get_table_names()
+    #table_names = inspector.get_table_names()
+    table_names = ['l_pal_polins', 'l_pal_cortes']
     
     def get_column_details(table_name)-> list[str]:
         columns = inspector.get_columns(table_name)

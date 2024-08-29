@@ -43,9 +43,10 @@ async def human_query_to_sql(human_query: str):
     
     sql_query = response.choices[0].message.content
     print("Raw response:", sql_query)
-    if '```' in sql_query:
-        sql_query = sql_query.split('```json\n')[1].split('\n```\n')[0]
-        sql_query = sql_query.strip('```')
+    sql_query = extraer_json(sql_query)
+    # if '```' in sql_query:
+    #     sql_query = sql_query.split('```json\n')[1].split('\n```\n')[0]
+    #     sql_query = sql_query.strip('```')
     print("JSON response:", sql_query)
     return sql_query
 
@@ -72,3 +73,20 @@ async def build_answer(result: list[dict[str, Any]], human_query: str)-> str | N
     )
     
     return response.choices[0].message.content
+
+def extraer_json(texto):
+    # Encuentra la posición del primer '{' y del último '}'
+    inicio_json = texto.find('{')
+    fin_json = texto.rfind('}')
+
+    # Extrae la parte del JSON
+    if inicio_json != -1 and fin_json != -1:
+        json_str = texto[inicio_json:fin_json + 1]
+        try:
+            # Intenta cargar el JSON para asegurar que es válido
+            json_data = json.loads(json_str)
+            return json_data
+        except json.JSONDecodeError:
+            return "Error: JSON no válido."
+    else:
+        return "Error: No se encontró un JSON en el texto."

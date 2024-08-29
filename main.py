@@ -44,7 +44,7 @@ async def human_query(payload: PostHumanQueryPayload) -> dict[str,str]:
         if not sql_query:
             raise HTTPException(status_code=400, detail="Invalid query")
         try:
-            result_dict = json.loads(sql_query)
+            result_dict = sql_query
         except json.JSONDecodeError as e:
             raise HTTPException(status_code=500, detail=f"Error decoding JSON: {str(e)}")
         
